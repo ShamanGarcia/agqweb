@@ -189,7 +189,7 @@ async function init() {
     map.addLayer({ id: "bld-fill", type: "fill", source: "buildings", paint: { "fill-color": ["get", "color"], "fill-opacity": 0.95 } });
     map.addLayer({ id: "bld-line", type: "line", source: "buildings", paint: { "line-color": "#2f3b33", "line-width": 1 } });
     map.addLayer({ id: "bld-ext", type: "fill-extrusion", source: "buildings", paint: { "fill-extrusion-color": ["get", "color"], "fill-extrusion-height": 5, "fill-extrusion-base": 0 } });
-    map.addLayer({ id: "bld-label", type: "symbol", source: "buildings", minzoom: 17.5, layout: label, paint: halo });
+    map.addLayer({ id: "bld-label", type: "symbol", source: "buildings", minzoom: 15, layout: { ...label, "text-size": ["interpolate", ["linear"], ["zoom"], 15, 9, 18, 13], "text-max-width": 7 }, paint: halo }); // collision handling thins them out when zoomed out
     // Trees: fill = species color, size = trunk diameter (DBH), black outline, as on the printed map. Biggest drawn first so small trees stay visible.
     map.addLayer({
       id: "trees-circle", type: "circle", source: "trees", layout: { "circle-sort-key": ["-", DBH] },
