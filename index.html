@@ -1,0 +1,136 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Camp AGQ Guide</title>
+  <link rel="icon" href="data:,">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Exo+2:wght@700;800&display=swap">
+  <link rel="stylesheet" href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#/map">Camp AGQ</a>
+    <nav class="pills" aria-label="Main">
+      <a class="pill teal" href="#/map" data-nav="map">Map</a>
+      <a class="pill magenta" href="#/ecology" data-nav="ecology">Ecology</a>
+      <a class="pill blue" href="#/guide" data-nav="guide">Field Guide</a>
+    </nav>
+  </header>
+
+  <main id="view-map">
+    <div id="map"></div>
+    <details id="panel" class="panel" open>
+      <summary>Layers</summary>
+      <div class="seg" id="mode">
+        <button data-mode="2d" class="on">2D</button><button data-mode="3d">3D</button>
+      </div>
+      <div id="layers"></div>
+      <details class="legend"><summary>Tree species colors</summary><div id="legend-body"></div></details>
+      <label class="base"><span>Basemap</span>
+        <select id="basemap"><option value="sat">Satellite</option><option value="plain">Plain</option></select>
+      </label>
+      <p class="hint">3D tree and building heights are estimates.</p>
+    </details>
+  </main>
+
+  <main id="view-ecology" hidden>
+    <section class="hero">
+      <div class="hero-in">
+        <h1>Ecology</h1>
+        <p>Identify the trees, shrubs, vines and animals species of Camp AGQ.</p>
+      </div>
+    </section>
+
+    <div class="wrap">
+      <div class="tabs" id="eco-tabs"></div>
+      <div class="species-head">
+        <input id="q" type="search" placeholder="Search…" autocomplete="off" aria-label="Search">
+      </div>
+      <div id="chips" class="chips"></div>
+      <div id="browse"></div>
+      <div id="tree" hidden></div>
+    </div>
+
+    <section class="promo">
+      <div class="promo-card">
+        <h2>See them in the woods</h2>
+        <p>Every tagged tree at camp is on the interactive map, colored by species and sized by trunk diameter.</p>
+        <a class="btn" href="#/map">Open the camp map</a>
+      </div>
+    </section>
+
+    <footer class="site-footer">
+      <p>Species sheets from the Camp AGQ Field Guide. Map imagery &copy; Esri.</p>
+    </footer>
+  </main>
+
+  <main id="view-guide" hidden>
+    <section class="hero">
+      <div class="hero-in">
+        <h1>Field Guide</h1>
+        <p>The complete Camp AGQ Field Guide. Click the book to open it and flip through every page.</p>
+      </div>
+    </section>
+
+    <div class="guide-wrap">
+      <aside class="toc" aria-label="Table of contents">
+        <h2>Contents</h2>
+        <ol id="toc-list"></ol>
+      </aside>
+      <div class="shelf">
+        <button class="book" id="book-closed" aria-label="Open the field guide">
+          <img src="img/sheets/p01.jpg" alt="The Camp AGQ Field Guide cover">
+        </button>
+        <p class="hint">Click the book to open</p>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <p>Species sheets from the Camp AGQ Field Guide. Map imagery &copy; Esri.</p>
+    </footer>
+  </main>
+
+  <div id="book-overlay" class="book-overlay" hidden>
+    <button class="b-close" id="b-close" aria-label="Close the book">&#10005;</button>
+    <aside class="b-toc" id="b-toc" aria-label="Table of contents">
+      <h2>Contents</h2>
+      <ol id="b-toc-list"></ol>
+    </aside>
+    <div class="b-stage">
+      <div class="b-row">
+        <button class="b-arrow" id="b-prev" aria-label="Previous page">&#8592;</button>
+        <div class="spread" id="spread">
+          <div class="pg l"><img alt="Left page"></div>
+          <div class="pg r"><img alt="Right page"></div>
+          <div class="leaf" id="leaf" hidden>
+            <div class="face front"><img alt=""></div>
+            <div class="face back"><img alt=""></div>
+          </div>
+        </div>
+        <button class="b-arrow" id="b-next" aria-label="Next page">&#8594;</button>
+      </div>
+      <div class="b-foot">
+        <button class="b-contents" id="b-contents">Contents</button>
+        <span id="b-count"></span>
+      </div>
+    </div>
+  </div>
+
+  <div id="viewer" class="viewer" hidden>
+    <div class="viewer-bar">
+      <button id="v-prev" aria-label="Previous">&#8592;</button>
+      <div id="v-title"></div>
+      <button id="v-next" aria-label="Next">&#8594;</button>
+      <button id="v-close" aria-label="Close">&#10005;</button>
+    </div>
+    <div class="viewer-body"><img id="v-img" alt=""></div>
+  </div>
+
+  <script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
