@@ -14,7 +14,7 @@ FIRST_PAGE, LAST_PAGE = 1, 52  # every page of the guide (1-based; PDF page == p
 # (file stem, output name, source CRS, properties kept: out_key -> dbf field)
 LAYERS = [
     ("ActivityAreas", "activity_areas", "utm16", {"name": "Name", "description": "Descriptio"}),
-    ("Buildings", "buildings", "utm16", {"name": "Name", "year": "YearBuilt", "description": "Descriptio"}),
+    ("Buildings", "buildings", "utm16", {"name": "Name", "year": "YearBuilt"}),
     ("Trails", "trails", "utm16", {"name": "Name"}),
     ("Property Border", "property", "utm16", {}),
     ("Trees", "trees", "webmerc", {"tag": "Tag_Number", "common": "Common_Nam", "scientific": "Scientific", "dbh": "dbh"}),
@@ -30,7 +30,14 @@ NAME_FIXES = {"Upststairs Camp": "Upstairs Camp"}  # typo in Areas.dbf
 EXTRA_FEATURES = {
     "trees": [{"type": "Feature", "properties": {"common": "Paper Birch", "scientific": "Betula papyrifera", "dbh": 48.6},
                "geometry": {"type": "Point", "coordinates": [-84.6839337, 45.4218847]}}],
+    # Cabins 21 and 22 are on the printed camp map (p.46) but not in Buildings.shp. Footprints are cabin 14's rectangle, placed
+    # and rotated from the print relative to cabins 14-20 (~2 m accuracy). Replace with surveyed polygons if they get added.
+    "buildings": [{"type": "Feature", "properties": {"name": n}, "geometry": {"type": "Polygon", "coordinates": [ring]}} for n, ring in (
+        ("21", [[-84.6822997, 45.422004], [-84.6823433, 45.4220488], [-84.6822623, 45.4220879], [-84.6822187, 45.4220431], [-84.6822997, 45.422004]]),
+        ("22", [[-84.6822026, 45.4219021], [-84.6822573, 45.4219403], [-84.6821882, 45.4219894], [-84.6821334, 45.4219513], [-84.6822026, 45.4219021]]))],
 }
+# Unidentified trees (no species recorded) inside these zones are dropped from the map.
+DROP_UNIDENTIFIED_IN = ["Hemlock Pine Forest"]
 
 # ---------- projections ----------
 A, F = 6378137.0, 1 / 298.257223563
@@ -162,6 +169,22 @@ def build_geojson():
         (OUT / "data" / f"{name}.geojson").write_text(
             json.dumps({"type": "FeatureCollection", "features": feats}, separators=(",", ":")), encoding="utf-8")
         print(f"{name}: {len(feats)} features")
+    drop_unidentified_trees()
+
+
+def in_ring(pt, ring):  # ray casting
+    x, y = pt
+    return sum((y1 > y) != (y2 > y) and x < (x2 - x1) * (y - y1) / (y2 - y1) + x1 for (x1, y1), (x2, y2) in zip(ring, ring[1:])) % 2 == 1
+
+
+def drop_unidentified_trees():
+    zones = [f["geometry"]["coordinates"][0] for f in json.loads((OUT / "data" / "areas.geojson").read_text())["features"]
+             if f["properties"].get("name") in DROP_UNIDENTIFIED_IN]
+    path = OUT / "data" / "trees.geojson"
+    fc = json.loads(path.read_text())
+    keep = [f for f in fc["features"] if f["properties"].get("common") or not any(in_ring(f["geometry"]["coordinates"], z) for z in zones)]
+    path.write_text(json.dumps({"type": "FeatureCollection", "features": keep}, separators=(",", ":")), encoding="utf-8")
+    print(f"trees: dropped {len(fc['features']) - len(keep)} unidentified in {', '.join(DROP_UNIDENTIFIED_IN)}")
 
 # ---------- PDF sheets ----------
 

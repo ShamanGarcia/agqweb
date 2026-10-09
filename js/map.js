@@ -85,7 +85,7 @@ function popupHtml(layer, p) {
   }
   if (layer.startsWith("areas")) return `<h3>${esc(p.name)}</h3>`;
   const year = +p.year > 0 ? `<p>Built ${esc(p.year)}</p>` : "";
-  return `<h3>${esc(p.name || "Building")}</h3>${year}${p.description ? `<p>${esc(p.description)}</p>` : ""}`;
+  return `<h3>${esc(p.name || "Building")}</h3>${year}`;
 }
 
 function applyVisibility() {
